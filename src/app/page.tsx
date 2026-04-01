@@ -81,11 +81,18 @@ export default function Home() {
   const paginatedOpenVPNServers = filteredOpenVPNServers.slice((page - 1) * pageSize, page * pageSize);
 
   const handleExport = () => {
-    const data = activeTab === 'vpngate' ? filteredVpnGateServers : filteredOpenVPNServers;
-    const csv = [
-      ['provider', 'country', 'country_code', 'protocol', 'filename'],
-      ...data.map(s => [s.provider || 'VPNGate', s.country, s.country_code, s.protocol || 'N/A', s.filename || ''])
-    ].map(row => row.join(',')).join('\n');
+    let csv: string;
+    if (activeTab === 'vpngate') {
+      csv = [
+        ['country', 'country_code', 'ip_address', 'hostname'],
+        ...filteredVpnGateServers.map(s => [s.country, s.country_code, s.ip_address, s.hostname || ''])
+      ].map(row => row.join(',')).join('\n');
+    } else {
+      csv = [
+        ['provider', 'country', 'country_code', 'protocol', 'filename'],
+        ...filteredOpenVPNServers.map(s => [s.provider, s.country, s.country_code, s.protocol, s.filename])
+      ].map(row => row.join(',')).join('\n');
+    }
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
