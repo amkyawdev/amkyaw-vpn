@@ -172,28 +172,44 @@ The frontend can be installed as a Progressive Web App:
 
 ## How to Connect to VPN
 
-This dashboard displays free VPN servers from VPN Gate. To connect:
+This dashboard provides free VPN servers from VPN Gate and OpenVPN providers. To connect:
 
-### 1. Get OpenVPN Config Files
-Visit [VPN Gate](https://www.vpngate.net/en/) to download configuration files:
-- Click on a server entry
-- Download the `.ovpn` configuration file
-- Or use the "OpenVPN Config" link for each server
+### Option 1: OpenVPN Connect (Recommended)
 
-### 2. Install VPN Client
-- **OpenVPN Connect**: https://openvpn.net/client/
-- **WireGuard**: https://www.wireguard.com/install/
+#### Step 1: Install OpenVPN Connect
+- **Download**: https://openvpn.net/client/
+- Install on your device (Windows, Mac, Linux, Android, iOS)
 
-### 3. Connect
-1. Open your VPN client
-2. Import the `.ovpn` config file
-3. Enter username/password (use `vpn` / `vpn`)
-4. Connect!
+#### Step 2: Download Config File
+1. Go to https://amkyaw-vpn.vercel.app
+2. Click **OpenVPN** tab
+3. Select your preferred country and provider
+4. Click **Download** button to get the `.ovpn` file
+
+#### Step 3: Import and Connect
+1. Open OpenVPN Connect app
+2. Click "Import" and select the `.ovpn` file
+3. Enter username/password (check provider website for credentials)
+4. Click "Connect"
+
+### Option 2: WireGuard
+
+For WireGuard protocol, you need WireGuard config files (.conf). These are different from .ovpn files.
+
+### Provider Credentials
+
+| Provider | Username | Password | Notes |
+|----------|----------|----------|-------|
+| FOV | `vpn` | `vpn` | May change - check freeopenvpn.org |
+| VBK | `vpnbook` | `vpnbook` | Updated periodically |
+| IPS | Check provider | website | Dynamic passwords |
+| FV4Y | Check provider | website | Dynamic passwords |
 
 ### Note
-This dashboard only displays server information. Actual VPN connection requires:
-- OpenVPN or WireGuard client software
-- Server configuration files (.ovpn or .conf)
+- This dashboard displays server information only
+- Actual VPN connection requires OpenVPN client software
+- Some servers may not work - try different providers
+- Free VPNs may have speed/bandwidth limitations
 
 ## License
 
