@@ -32,7 +32,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const servers: VPNServer[] = vpnServers as VPNServer[];
+  const servers = vpnServers as unknown as VPNServer[];
 
   const filteredServers = useMemo(() => {
     let filtered = servers;
