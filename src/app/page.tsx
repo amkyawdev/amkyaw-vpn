@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Globe, Server, RefreshCw, Download, Search, MapPin, Signal, Users, Star } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Globe, Server, RefreshCw, Download, Search, Signal, Users, Star } from 'lucide-react';
+import { vpnServers } from '@/data/servers';
 
 interface VPNServer {
   id: number;
@@ -16,8 +17,6 @@ interface VPNServer {
   uptime: number;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://amkyaw-vpn-api.vercel.app/api/v1';
-
 function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(' ');
 }
@@ -28,33 +27,14 @@ function CountryFlag({ countryCode }: { countryCode: string }) {
 }
 
 export default function Home() {
-  const [servers, setServers] = useState<VPNServer[]>([]);
-  const [filteredServers, setFilteredServers] = useState<VPNServer[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  const fetchServers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`${API_BASE}/servers`);
-      if (!response.ok) throw new Error('Failed to fetch servers');
-      const data = await response.json();
-      setServers(data.servers || data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const servers: VPNServer[] = vpnServers as VPNServer[];
 
-  useEffect(() => { fetchServers(); }, []);
-
-  useEffect(() => {
+  const filteredServers = useMemo(() => {
     let filtered = servers;
     if (selectedCountry) {
       filtered = filtered.filter(s => s.country_code === selectedCountry);
@@ -67,11 +47,14 @@ export default function Home() {
         s.hostname?.toLowerCase().includes(q)
       );
     }
-    setFilteredServers(filtered);
-    setPage(1);
+    return filtered;
   }, [servers, selectedCountry, searchQuery]);
 
-  const countries = [...new Set(servers.map(s => s.country_code))].sort();
+  const countries = useMemo(() => {
+    const countrySet = new Set(servers.map(s => s.country_code));
+    return Array.from(countrySet).sort();
+  }, [servers]);
+
   const paginatedServers = filteredServers.slice((page - 1) * pageSize, page * pageSize);
 
   const handleExport = () => {
@@ -95,7 +78,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-primary-600 p-2 rounded-lg">
+              <div className="bg-blue-600 p-2 rounded-lg">
                 <Globe className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -103,9 +86,6 @@ export default function Home() {
                 <p className="text-xs text-gray-500 dark:text-gray-400">Free VPN Dashboard</p>
               </div>
             </div>
-            <button onClick={fetchServers} disabled={loading} className={cn('flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700', loading && 'opacity-50')}>
-              <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} /> Refresh
-            </button>
           </div>
         </div>
       </header>
@@ -115,18 +95,28 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Server className="w-5 h-5 text-primary-600" />
+                <Server className="w-5 h-5 text-blue-600" />
                 <span className="font-medium text-gray-900 dark:text-white">{filteredServers.length} Servers</span>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <select value={selectedCountry} onChange={e => setSelectedCountry(e.target.value)} className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm">
+              <select 
+                value={selectedCountry} 
+                onChange={e => { setSelectedCountry(e.target.value); setPage(1); }} 
+                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm"
+              >
                 <option value="">All Countries</option>
                 {countries.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm" />
+                <input 
+                  type="text" 
+                  placeholder="Search..." 
+                  value={searchQuery} 
+                  onChange={e => { setSearchQuery(e.target.value); setPage(1); }} 
+                  className="pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white text-sm" 
+                />
               </div>
               <button onClick={handleExport} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
                 <Download className="w-4 h-4" /> Export
@@ -135,14 +125,7 @@ export default function Home() {
           </div>
         </div>
 
-        {error && <div className="bg-red-100 dark:bg-red-900 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6">{error}</div>}
-
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <RefreshCw className="w-8 h-8 text-primary-600 animate-spin" />
-            <span className="ml-3 text-gray-600 dark:text-gray-400">Loading servers...</span>
-          </div>
-        ) : paginatedServers.length === 0 ? (
+        {paginatedServers.length === 0 ? (
           <div className="text-center py-12">
             <Server className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400">No servers found</p>
@@ -151,7 +134,11 @@ export default function Home() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedServers.map((server, index) => (
-                <div key={server.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                <div 
+                  key={server.id} 
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow"
+                  style={{ animationDelay: `${index * 30}ms` }}
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <CountryFlag countryCode={server.country_code} />
@@ -180,9 +167,21 @@ export default function Home() {
             </div>
             {filteredServers.length > pageSize && (
               <div className="flex items-center justify-center gap-2 mt-8">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-50">Previous</button>
+                <button 
+                  onClick={() => setPage(p => Math.max(1, p - 1))} 
+                  disabled={page === 1} 
+                  className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-50"
+                >
+                  Previous
+                </button>
                 <span className="px-4 py-2">Page {page}</span>
-                <button onClick={() => setPage(p => p + 1)} disabled={paginatedServers.length < pageSize} className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-50">Next</button>
+                <button 
+                  onClick={() => setPage(p => p + 1)} 
+                  disabled={paginatedServers.length < pageSize} 
+                  className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-50"
+                >
+                  Next
+                </button>
               </div>
             )}
           </>
