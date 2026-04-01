@@ -196,7 +196,9 @@ export default function Home() {
                       </div>
                       <span className={cn('px-2 py-1 rounded text-xs font-medium', server.protocol === 'TCP' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700' : 'bg-purple-100 dark:bg-purple-900 text-purple-700')}>{server.protocol}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-3">
+                    {server.provider === 'FOV' && <div className="text-xs text-gray-500 mb-2">User: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">vpn</code> / Pass: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">vpn</code></div>}
+                    {server.provider === 'VBK' && <div className="text-xs text-gray-500 mb-2">User: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">vpnbook</code> / Pass: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">vpnbook</code></div>}
+                    <div className="flex items-center gap-2 mt-2">
                       <button onClick={() => downloadConfig(server.filename)} className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"><Download className="w-4 h-4" />Download</button>
                       <button onClick={() => copyToClipboard(server.filename, server.id)} className="px-3 py-2 rounded-lg text-sm bg-gray-100 dark:bg-gray-700">{copiedId === server.id ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}</button>
                     </div>
