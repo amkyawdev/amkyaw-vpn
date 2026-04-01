@@ -120,7 +120,7 @@ export default function Home() {
             <div className="bg-blue-600 p-2 rounded-lg"><Globe className="w-6 h-6 text-white" /></div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">Amkyaw VPN</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Free VPN Dashboard</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Free VPN Dashboard - Click Connect to start</p>
             </div>
           </div>
         </div>
@@ -184,7 +184,17 @@ export default function Home() {
           paginatedOpenVPNServers.length === 0 ? <div className="text-center py-12"><Server className="w-12 h-12 text-gray-400 mx-auto mb-4" /><p className="text-gray-500 dark:text-gray-400">No servers found</p></div> : (
             <>
               <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-                <p className="text-sm text-blue-800 dark:text-blue-200"><strong>How to connect:</strong> Download the .ovpn config file and import it into OpenVPN Connect app. Username/Password may be required.</p>
+                <div className="flex items-start gap-3">
+                  <div className="bg-blue-600 rounded-lg p-2"><Globe className="w-5 h-5 text-white" /></div>
+                  <div>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">How to Connect (3 Steps)</p>
+                    <ol className="text-xs text-blue-700 dark:text-blue-300 mt-1 list-decimal list-inside">
+                      <li>Download .ovpn config file below</li>
+                      <li>Import to OpenVPN Connect app</li>
+                      <li>Enter username/password and click Connect</li>
+                    </ol>
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {paginatedOpenVPNServers.map((server) => (
