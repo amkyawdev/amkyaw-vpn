@@ -170,6 +170,31 @@ The frontend can be installed as a Progressive Web App:
 - ✅ Validate and sanitize all user inputs
 - ✅ Never expose sensitive information in error messages
 
+## How to Connect to VPN
+
+This dashboard displays free VPN servers from VPN Gate. To connect:
+
+### 1. Get OpenVPN Config Files
+Visit [VPN Gate](https://www.vpngate.net/en/) to download configuration files:
+- Click on a server entry
+- Download the `.ovpn` configuration file
+- Or use the "OpenVPN Config" link for each server
+
+### 2. Install VPN Client
+- **OpenVPN Connect**: https://openvpn.net/client/
+- **WireGuard**: https://www.wireguard.com/install/
+
+### 3. Connect
+1. Open your VPN client
+2. Import the `.ovpn` config file
+3. Enter username/password (use `vpn` / `vpn`)
+4. Connect!
+
+### Note
+This dashboard only displays server information. Actual VPN connection requires:
+- OpenVPN or WireGuard client software
+- Server configuration files (.ovpn or .conf)
+
 ## License
 
 MIT License
